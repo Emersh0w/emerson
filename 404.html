@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Página não encontrada - Erro 404</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+        <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+        <link rel="manifest" href="favicon/site.webmanifest">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Inter', sans-serif;
+                background: linear-gradient(135deg, #2c3e50 0%, #34495e 25%, #2c3e50 50%, #1a252f 100%);
+                color: #fff;
+                line-height: 1.6;
+                height: 100vh;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .falling-numbers {
+                display: flex;
+                gap: 20px;
+                font-size: clamp(6rem, 12vw, 12rem);
+                font-family: 'Playfair Display', serif;
+                position: relative;
+            }
+
+            .digit {
+                opacity: 0;
+                transition: all 0.3s;
+            }
+
+            .fall-in {
+                animation: fall 1.5s ease forwards;
+            }
+
+            .fall-out {
+                animation: fallOut 1.5s ease forwards;
+            }
+
+            @keyframes fall {
+                0% {
+                    transform: translateY(-100vh) rotate(0deg);
+                    opacity: 0;
+                }
+
+                60% {
+                    opacity: 1;
+                    transform: translateY(50vh) rotate(180deg);
+                }
+
+                100% {
+                    transform: translateY(0) rotate(360deg);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fallOut {
+                0% {
+                    opacity: 1;
+                    transform: translateY(0) rotate(360deg);
+                }
+
+                100% {
+                    transform: translateY(120vh) rotate(720deg);
+                    opacity: 0;
+                }
+            }
+
+            p {
+                font-size: clamp(1.25rem, 2vw, 2.50rem);
+                ;
+                margin: 20px 0;
+                color: rgba(255, 255, 255, 0.85);
+            }
+
+            a.redirect-link {
+                position: relative;
+                padding: 16px 40px;
+                font-size: 1.1rem;
+                font-weight: 500;
+                border-radius: 50px;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                text-decoration: none;
+                color: rgba(255, 255, 255, 0.95);
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                overflow: hidden;
+                letter-spacing: 0.5px;
+                display: inline-block;
+            }
+
+            a.redirect-link i {
+                margin-right: 8px;
+            }
+
+            a.redirect-link::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                left: -100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.5s;
+            }
+
+            a.redirect-link:hover::before {
+                left: 100%;
+            }
+
+            a.redirect-link:hover {
+                transform: translateY(-5px) scale(1.05);
+                background: rgba(255, 255, 255, 0.2);
+                border-color: rgba(255, 255, 255, 0.5);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div class="falling-numbers" id="numbers-container">
+            <div class="digit">4</div>
+            <div class="digit">0</div>
+            <div class="digit">4</div>
+        </div>
+
+        <p>Oops! A página que você está procurando não existe.</p>
+
+        <a href="index.html" class="redirect-link" aria-label="Voltar para Home">
+            <i class="fas fa-home"></i>Voltar para Home
+        </a>
+
+        <!-- Som de queda -->
+        <audio id="fall-sound" src="https://www.soundjay.com/mechanical/sounds/impact-metal-1.mp3" preload="auto"></audio>
+
+        <script>
+            const digits = document.querySelectorAll('.digit');
+            const container = document.getElementById('numbers-container');
+            const fallSound = document.getElementById('fall-sound');
+
+            const digitVariations = {
+                '4': ['4', '⁴', '𝟜', '➍'],
+                '0': ['0', 'O', 'Ø', '⭕', '𝟘','o']
+            };
+
+            function randomChoice(arr) {
+                return arr[Math.floor(Math.random() * arr.length)];
+            }
+
+            function updateDigits() {
+                digits[0].textContent = randomChoice(digitVariations['4']);
+                digits[1].textContent = randomChoice(digitVariations['0']);
+                digits[2].textContent = randomChoice(digitVariations['4']);
+            }
+
+            function loop404() {
+                updateDigits();
+
+                digits.forEach((digit, i) => {
+                    digit.classList.remove('fall-in', 'fall-out');
+                    digit.style.opacity = '0';
+
+                    setTimeout(() => {
+                        digit.classList.add('fall-in');
+                        if (i === 0) fallSound.play(); // toca som na primeira queda
+                    }, i * 200);
+                });
+
+                setTimeout(() => {
+                    digits.forEach((digit, i) => {
+                        setTimeout(() => {
+                            digit.classList.remove('fall-in');
+                            digit.classList.add('fall-out');
+                            if (i === 0) fallSound.play(); // som na saída também (opcional)
+                        }, i * 200);
+                    });
+                }, 5000);
+
+                setTimeout(() => {
+                    loop404();
+                }, 8000);
+            }
+
+            loop404();
+        </script>
+    </body>
+
+</html>
